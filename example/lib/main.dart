@@ -119,10 +119,30 @@ class _MyAppState extends State<MyApp> {
             },
           )
         ]),
-        body: Center(
-          child: _stream == null
-              ? const Text("")
-              : NetStreamDrawableTexture(_stream),
+        body: Stack(
+          children: [
+            Center(
+              child: _stream == null
+                  ? const Text("")
+                  : NetStreamDrawableTexture(_stream),
+            ),
+            Row(
+              children: [
+                TextButton(onPressed: () {
+                  _stream?.handleImage('static');
+                },
+                child: const Text("推送静态图片")),
+                TextButton(onPressed: () {
+                  _stream?.handleImage('filter');
+                },
+                child: const Text("推送滤镜")),
+                TextButton(onPressed: () {
+                  _stream?.handleImage('');
+                },
+                child: const Text("推送原视频"))
+              ],
+            )
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           child: _recording
@@ -135,7 +155,7 @@ class _MyAppState extends State<MyApp> {
                 _recording = false;
               });
             } else {
-              _connection?.connect("rtmp://192.168.1.9/live");
+              _connection?.connect("rtmp://192.168.6.58/hls");
             }
           },
         ),

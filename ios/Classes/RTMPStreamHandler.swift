@@ -4,6 +4,8 @@ import HaishinKit
 import AVFoundation
 import VideoToolbox
 
+var imageData: CIImage?
+var imageHandle: String?
 class RTMPStreamHandler: NSObject, MethodCallHandler {
     private let plugin: SwiftHaishinKitPlugin
     private var instance: RTMPStream?
@@ -29,6 +31,18 @@ class RTMPStreamHandler: NSObject, MethodCallHandler {
             NotificationCenter.default.addObserver(self, selector: #selector(on(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
             self.instance = instance
         }
+        guard let url = URL(string: "https://img1.baidu.com/it/u=413643897,2296924942&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500") else {
+            return
+        }
+        URLSession.shared.dataTask(with: url) { data, response, error  in
+            if let image = UIImage(data: data!) {
+                imageData = CIImage(image: image)
+            } else {
+                print(error ?? "")
+            }
+        }
+        .resume()
+        _ = instance?.registerVideoEffect(MonochromeEffect())
     }
 
     func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -146,6 +160,10 @@ class RTMPStreamHandler: NSObject, MethodCallHandler {
             instance = nil
             plugin.onDispose(id: Int(bitPattern: ObjectIdentifier(self)))
             result(nil)
+        case "RtmpStream#handleImage":
+            let type = arguments["name"] as? String
+            imageHandle = type
+            result(nil)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -177,5 +195,27 @@ extension RTMPStreamHandler: FlutterStreamHandler {
 
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
         return nil
+    }
+}
+
+
+final class MonochromeEffect: VideoEffect {
+    let filter: CIFilter? = CIFilter(name: "CIColorMonochrome")
+
+    override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
+        if (imageHandle == nil) {
+            return image
+        } else if (imageHandle == "static") {
+            return imageData ?? image
+        } else if (imageHandle == "filter") {
+            guard let filter: CIFilter = filter else {
+                return image
+            }
+            filter.setValue(image, forKey: "inputImage")
+            filter.setValue(CIColor(red: 0.5, green: 0.5, blue: 0.5), forKey: "inputColor")
+            filter.setValue(1.0, forKey: "inputIntensity")
+            return filter.outputImage!
+        }
+        return image
     }
 }

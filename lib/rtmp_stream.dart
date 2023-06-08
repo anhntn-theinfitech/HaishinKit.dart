@@ -108,4 +108,9 @@ class RtmpStream extends NetStream {
     assert(_memory != null);
     RtmpStreamPlatform.instance.dispose({"memory": _memory});
   }
+  // 图片处理
+  Future<void> handleImage(String params) async {
+    assert(_memory != null);
+    RtmpStreamPlatform.instance.handleImage({"memory": _memory, "name": params});
+  }
 }

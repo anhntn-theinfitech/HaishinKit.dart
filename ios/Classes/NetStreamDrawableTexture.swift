@@ -16,7 +16,14 @@ class NetStreamDrawableTexture: NSObject, FlutterTexture {
     var videoFormatDescription: CMVideoFormatDescription?
     var bounds: CGSize = .zero
     var videoGravity: AVLayerVideoGravity = .resizeAspectFill
-    private var currentSampleBuffer: CMSampleBuffer?
+    private var currentSampleBuffer: CMSampleBuffer? {
+        didSet {
+            if let currentStream = currentStream {
+                currentStream.context = CIContext()
+            }
+        }
+    }
+//    var currentSampleBuffer: CMSampleBuffer?
     private let registry: FlutterTextureRegistry
     private let context = CIContext()
     private var queue = DispatchQueue(label: "com.haishinkit.NetStreamDrawableTexture")
@@ -35,7 +42,9 @@ class NetStreamDrawableTexture: NSObject, FlutterTexture {
             return nil
         }
 
-        let displayImage = CIImage(cvPixelBuffer: imageBuffer)
+        var displayImage = CIImage(cvPixelBuffer: imageBuffer)
+        // 同步传输结果到画面上
+        displayImage = MonochromeEffect().execute(displayImage, info: currentSampleBuffer)
         var scaleX: CGFloat = 0
         var scaleY: CGFloat = 0
         var translationX: CGFloat = 0

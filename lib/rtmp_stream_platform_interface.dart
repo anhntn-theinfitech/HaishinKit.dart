@@ -66,4 +66,9 @@ abstract class RtmpStreamPlatform extends PlatformInterface {
   Future<void> dispose(Map<String, dynamic> params) {
     throw UnimplementedError('dispose() has not been implemented.');
   }
+
+  /// Disposes the RtmpStream platform instance.
+  Future<void> handleImage(Map<String, dynamic> params) {
+    throw UnimplementedError('handleImage() has not been implemented.');
+  }
 }
