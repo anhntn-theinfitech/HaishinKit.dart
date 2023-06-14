@@ -43,6 +43,12 @@ class RtmpConnectionHandler(
                 instance?.close()
                 result.success(null)
             }
+            "$TAG#upRate" -> {
+                val map = HashMap<String, Long>();
+                map["total"] = instance?.totalBytesOut ?: 0
+                map["current"] = instance?.totalBytesOut ?: 0
+                result.success(map)
+            }
             "$TAG#dispose" -> {
                 eventSink?.endOfStream()
                 instance?.dispose()

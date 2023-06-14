@@ -31,4 +31,8 @@ abstract class RtmpConnectionPlatform extends PlatformInterface {
   Future<void> dispose(Map<String, dynamic> params) {
     throw UnimplementedError('dispose() has not been implemented.');
   }
+
+  Future<dynamic> getUpRate(Map<String, dynamic> params) {
+    throw UnimplementedError('getUpRate() has not been implemented.');
+  }
 }

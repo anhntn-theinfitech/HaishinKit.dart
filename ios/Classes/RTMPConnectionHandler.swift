@@ -34,6 +34,11 @@ class RTMPConnectionHandler: NSObject, MethodCallHandler {
             instance?.connect(command)
         case "RtmpConnection#close":
             instance?.close()
+        case "RtmpConnection#upRate":
+            var map: [String: Any] = [:]
+            map["total"] = instance?.totalBytesOut ?? 0
+            map["current"] = instance?.currentBytesOutPerSecond ?? 0
+            result(map)
         case "RtmpConnection#dispose":
             instance = nil
             plugin.onDispose(id: Int(bitPattern: ObjectIdentifier(self)))

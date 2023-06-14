@@ -28,6 +28,8 @@ class _MyAppState extends State<MyApp> {
   bool _recording = false;
   String _mode = "publish";
   CameraPosition currentPosition = CameraPosition.back;
+  late RtmpConnection connection;
+  Timer? timer;
 
   @override
   void initState() {
@@ -37,6 +39,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    timer?.cancel();
     _stream?.dispose();
     _connection?.dispose();
     super.dispose();
@@ -54,7 +57,7 @@ class _MyAppState extends State<MyApp> {
           AVAudioSessionCategoryOptions.allowBluetooth,
     ));
 
-    RtmpConnection connection = await RtmpConnection.create();
+    connection = await RtmpConnection.create();
     connection.eventChannel.receiveBroadcastStream().listen((event) {
       switch (event["data"]["code"]) {
         case 'NetConnection.Connect.Success':
@@ -130,12 +133,18 @@ class _MyAppState extends State<MyApp> {
               : const Icon(Icons.not_started),
           onPressed: () {
             if (_recording) {
+              timer?.cancel();
               _connection?.close();
               setState(() {
                 _recording = false;
               });
             } else {
               _connection?.connect("rtmp://192.168.1.9/live");
+              timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                connection.getUpRate().then((upRate) {
+                  print("${upRate.total}${upRate.current}");
+                });
+              });
             }
           },
         ),
