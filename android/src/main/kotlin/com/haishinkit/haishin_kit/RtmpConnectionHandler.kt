@@ -43,7 +43,7 @@ class RtmpConnectionHandler(
                 instance?.close()
                 result.success(null)
             }
-            "$TAG#streamBytes" -> {
+            "$TAG#upRate" -> {
                 val map = HashMap<String, Long>();
                 map["total"] = instance?.totalBytesOut ?: 0
                 map["current"] = instance?.totalBytesOut ?: 0

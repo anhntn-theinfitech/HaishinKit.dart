@@ -51,7 +51,7 @@ class RtmpConnection {
   }
 
   /// Disposes the connection platform instance.
-  Future<UpRate> sendBytes() async {
+  Future<UpRate> getUpRate() async {
     assert(_memory != null);
     final resultDynamic =
         await RtmpConnectionPlatform.instance.getUpRate({"memory": _memory});

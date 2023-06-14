@@ -164,7 +164,7 @@ class _MyAppState extends State<MyApp> {
             } else {
               _connection?.connect("rtmp://192.168.6.58/hls");
               timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                connection.sendBytes().then((upRate) {
+                connection.getUpRate().then((upRate) {
                   // 安卓版只有total，在计算的时候需使用total计算
                   print("${upRate.total}${upRate.current}");
                 });
