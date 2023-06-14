@@ -20,4 +20,10 @@ class MethodChannelRtmpConnection extends RtmpConnectionPlatform {
     return await MethodChannelHaishinKit.channel
         .invokeMethod<void>("RtmpConnection#dispose", params);
   }
+
+  @override
+  Future<dynamic> getUpRate(Map<String, dynamic> params) async {
+    return await MethodChannelHaishinKit.channel
+        .invokeMethod<dynamic>("RtmpConnection#upRate", params);
+  }
 }
