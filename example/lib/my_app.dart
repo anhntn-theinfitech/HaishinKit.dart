@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.tv),
-              label: 'ScreenView',
+              label: 'Screen view',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings),

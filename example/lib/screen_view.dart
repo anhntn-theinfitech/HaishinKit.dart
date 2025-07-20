@@ -22,7 +22,8 @@ class ScreenView extends StatefulWidget {
   State<ScreenView> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<ScreenView> with AutomaticKeepAliveClientMixin {
+class _MyAppState extends State<ScreenView>
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   RtmpConnection? _connection;
   RtmpStream? _stream;
   bool _recording = false;
@@ -31,6 +32,7 @@ class _MyAppState extends State<ScreenView> with AutomaticKeepAliveClientMixin {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
     initPlatformState();
   }
@@ -39,7 +41,20 @@ class _MyAppState extends State<ScreenView> with AutomaticKeepAliveClientMixin {
   void dispose() {
     _stream?.dispose();
     _connection?.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      print(">>>> GO TO BACKGROUND - ${currentPosition}");
+      _stream?.attachVideo(null);
+    } else if (state == AppLifecycleState.resumed) {
+      print(">>>> COMEBACK - ${currentPosition}");
+      _stream?.attachVideo(VideoSource(position: currentPosition));
+      setState(() {});
+    }
   }
 
   Future<void> initPlatformState() async {
@@ -81,18 +96,14 @@ class _MyAppState extends State<ScreenView> with AutomaticKeepAliveClientMixin {
 
     RtmpStream stream = await RtmpStream.create(connection);
     stream.audioSettings = AudioSettings(muted: false, bitrate: 64 * 1000);
-    stream.videoSettings = VideoSettings(
-      width: 720,
-      height: 1280,
-      bitrate: 3000 * 1000,
-    );
+
     stream.attachAudio(AudioSource());
     stream.attachVideo(VideoSource(position: currentPosition));
     stream.captureSettings = CaptureSettings(
-      continuousAutofocus: false,
+      continuousAutofocus: true,
       continuousExposure: false,
       fps: 60,
-      sessionPreset: AVCaptureSessionPreset.medium,
+      sessionPreset: AVCaptureSessionPreset.high,
     );
 
     stream.videoSettings = VideoSettings(
@@ -112,6 +123,7 @@ class _MyAppState extends State<ScreenView> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Stream View'), actions: [
         IconButton(
@@ -120,11 +132,11 @@ class _MyAppState extends State<ScreenView> with AutomaticKeepAliveClientMixin {
             if (_mode == "publish") {
               _mode = "playback";
               _stream?.attachVideo(null);
-              _stream?.attachAudio(null);
+              // _stream?.attachAudio(null);
             } else {
               _mode = "publish";
               print("publish");
-              _stream?.attachAudio(AudioSource());
+              // _stream?.attachAudio(AudioSource());
               _stream?.attachVideo(VideoSource(position: currentPosition));
             }
           },
@@ -172,7 +184,8 @@ class _MyAppState extends State<ScreenView> with AutomaticKeepAliveClientMixin {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Stream Url & Stream Key can not be null: \nURL = $streamUrl \nKey = $streamKey')),
+              content: Text(
+                  'Stream Url & Stream Key can not be null: \nURL = $streamUrl \nKey = $streamKey')),
         );
       }
     }

@@ -32,6 +32,7 @@ dependencies:
   permission_handler: any
   audio_session: any
   get: ^4.6.5
+  wakelock_plus: ^1.1.4
 
 dev_dependencies:
   flutter_test:

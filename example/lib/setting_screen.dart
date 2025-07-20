@@ -9,10 +9,11 @@ class SettingScreen extends StatefulWidget {
   State<SettingScreen> createState() => _SettingScreenState();
 }
 
-class _SettingScreenState extends State<SettingScreen>  with AutomaticKeepAliveClientMixin{
+class _SettingScreenState extends State<SettingScreen>
+    with AutomaticKeepAliveClientMixin {
   final TextEditingController _streamUrlController = TextEditingController();
   final TextEditingController _streamKeyController = TextEditingController();
-  late final AppController _appController ;
+  late final AppController _appController;
 
   @override
   void initState() {
@@ -20,8 +21,10 @@ class _SettingScreenState extends State<SettingScreen>  with AutomaticKeepAliveC
     super.initState();
     _appController = Get.find<AppController>();
   }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
