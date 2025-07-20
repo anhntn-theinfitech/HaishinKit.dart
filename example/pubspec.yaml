@@ -31,6 +31,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   permission_handler: any
   audio_session: any
+  get: ^4.6.5
 
 dev_dependencies:
   flutter_test:
