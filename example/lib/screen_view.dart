@@ -166,7 +166,15 @@ class _MyAppState extends State<ScreenView> with AutomaticKeepAliveClientMixin {
     } else {
       AppController appController = Get.find<AppController>();
       String streamUrl = appController.streamUrl.value;
-      _connection?.connect(streamUrl);
+      String streamKey = appController.streamKey.value;
+      if (streamUrl.isNotEmpty && streamKey.isNotEmpty) {
+        _connection?.connect(streamUrl);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Stream Url & Stream Key can not be null: \nURL = $streamUrl \nKey = $streamKey')),
+        );
+      }
     }
   }
 
